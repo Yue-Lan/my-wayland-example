@@ -1,5 +1,6 @@
 #include <wayland-server.h>
 #include "xdg-shell.h"
+#include "ukui-decoration-server.h"
 #include <stdlib.h>
 #include "backend.h"
 #include <GL/gl.h>
@@ -44,6 +45,7 @@ struct surface {
 	struct wl_resource *xdg_toplevel;
 	struct wl_resource *buffer;
 	struct wl_resource *frame_callback;
+	bool use_ukui_decoration;
 	int x, y;
 	struct texture texture;
 	struct client *client;
@@ -350,6 +352,22 @@ static void seat_bind (struct wl_client *client, void *data, uint32_t version, u
 	wl_seat_send_capabilities (seat, WL_SEAT_CAPABILITY_POINTER|WL_SEAT_CAPABILITY_KEYBOARD);
 }
 
+// ukui decoration
+static void ukui_decoration_register_surface() {
+
+}
+
+static void ukui_decoration_set_deco_mode() {
+
+}
+
+static struct ukui_decoration_interface ukui_decoration_implementation = {&ukui_decoration_register_surface, &ukui_decoration_set_deco_mode};
+static void ukui_decoration_bind (struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	printf ("bind: ukui decoration\n");
+	struct wl_resource *ukui_decoration = wl_resource_create(client, &ukui_decoration_interface, 1, id);
+	wl_resource_set_implementation (ukui_decoration, &ukui_decoration_interface, NULL, NULL);
+}
+
 // backend callbacks
 static void handle_resize_event (int width, int height) {
 	glViewport (0, 0, width, height);
@@ -476,6 +494,7 @@ int main () {
 	wl_global_create (display, &wl_shell_interface, 1, NULL, &shell_bind);
 	wl_global_create (display, &xdg_wm_base_interface, 1, NULL, &xdg_wm_base_bind);
 	wl_global_create (display, &wl_seat_interface, 1, NULL, &seat_bind);
+	wl_global_create (display, &ukui_decoration_interface, 1, NULL, &ukui_decoration_bind);
 	eglBindWaylandDisplayWL (backend_get_egl_display(), display);
 	wl_display_init_shm (display);
 	
