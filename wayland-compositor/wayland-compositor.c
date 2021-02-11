@@ -353,19 +353,30 @@ static void seat_bind (struct wl_client *client, void *data, uint32_t version, u
 }
 
 // ukui decoration
-static void ukui_decoration_register_surface() {
+static void ukui_decoration_register_surface(struct wl_client *client,
+				 struct wl_resource *resource,
+				 struct wl_resource *surface) {
 
+    struct surface *surface1 = wl_resource_get_user_data (resource);
+
+	printf ("register surface\n");
+	//printf("surface pos: %d, %d\n", surface1->x, surface1->y);
 }
 
-static void ukui_decoration_set_deco_mode() {
-
+static void ukui_decoration_set_deco_mode(struct wl_client *client,
+					 struct wl_resource *resource,
+					 struct wl_resource *surface,
+					 uint32_t mode) {
+	//struct surface *surface1 = wl_resource_get_user_data (resource);
+	//surface1->use_ukui_decoration = true;		 
+	printf("use ukui deco");
 }
 
 static struct ukui_decoration_interface ukui_decoration_implementation = {&ukui_decoration_register_surface, &ukui_decoration_set_deco_mode};
 static void ukui_decoration_bind (struct wl_client *client, void *data, uint32_t version, uint32_t id) {
 	printf ("bind: ukui decoration\n");
 	struct wl_resource *ukui_decoration = wl_resource_create(client, &ukui_decoration_interface, 1, id);
-	wl_resource_set_implementation (ukui_decoration, &ukui_decoration_interface, NULL, NULL);
+	wl_resource_set_implementation (ukui_decoration, &ukui_decoration_implementation, NULL, NULL);
 }
 
 // backend callbacks
